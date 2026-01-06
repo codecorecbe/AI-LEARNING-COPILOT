@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Readiness AI Copilot</title>
+    <link rel="stylesheet" href="../codecore.css/style.css">
+</head>
+<body>
+    <!-- Responsive Navbar -->
+    <header>
+        <!-- Background Video INSIDE Header -->
+        <video id="bgVideo" class="header-bg-video" muted loop playsinline autoplay>
+            <source src="../introvedio.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        
+        <div class="header-content">
+            <h1>Career Readiness AI Copilot</h1>
+            <p class="tagline">Plan · Learn · Practice · Master</p>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav class="navbar" id="navbar">
+                <a href="index.html" class="active">Home</a>
+                <a href="subjects.html">Subjects</a>
+                <a href="task.html">Tasks</a>
+                <a href="doubts.html">Doubts</a>
+                <a href="quize.html">Quiz</a>
+                <a href="progress.html">Progress</a>
+                <a href="notes.html">Notes</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="content">
+        <section class="section active">
+            <h2>🚀 Welcome to Your AI Copilot</h2>
+            <p style="color: #6b7280; margin-bottom: 24px;">Everything is AI-driven and dynamic: enter any subject, generate topics, tasks, questions, and answers instantly.</p>
+
+            <div class="subjects-grid">
+                <div class="subject-card">
+                    <div class="subject-card-header">
+                        <h3>Explore Subjects</h3>
+                    </div>
+                    <div class="subject-card-body">
+                        <p class="topic-count">AI-generated topics & questions for any subject</p>
+                        <button class="btn-primary" style="width: 100%;" onclick="window.location.href='subjects.html'">Start with a Subject</button>
+                    </div>
+                </div>
+
+                <div class="subject-card">
+                    <div class="subject-card-header">
+                        <h3>Tasks & Practice</h3>
+                    </div>
+                    <div class="subject-card-body">
+                        <p class="topic-count">See AI-generated questions for your chosen topic</p>
+                        <button class="btn-primary" style="width: 100%;" onclick="window.location.href='task.html'">View Tasks</button>
+                    </div>
+                </div>
+
+                <div class="subject-card">
+                    <div class="subject-card-header">
+                        <h3>Doubt Solver</h3>
+                    </div>
+                    <div class="subject-card-body">
+                        <p class="topic-count">Ask any question—AI explains with steps and tips</p>
+                        <button class="btn-primary" style="width: 100%;" onclick="window.location.href='doubts.html'">Ask a Doubt</button>
+                    </div>
+                </div>
+
+                <div class="subject-card">
+                    <div class="subject-card-header">
+                        <h3>AI Quiz Generator</h3>
+                    </div>
+                    <div class="subject-card-body">
+                        <p class="topic-count">Generate custom quizzes for any topic and difficulty</p>
+                        <button class="btn-primary" style="width: 100%;" onclick="window.location.href='quize.html'">Generate a Quiz</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../codecore.js/script.js"></script>
+    <script src="../codecore.js/bg-video.js"></script>
+</body>
+</html>

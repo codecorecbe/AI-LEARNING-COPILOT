@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Answer Verification Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .test-control {
+            margin: 15px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        textarea {
+            width: 100%;
+            min-height: 60px;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+            display: block;
+        }
+        .log-section {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        .log-entry.info { color: #0066cc; }
+        .log-entry.success { color: #009900; }
+        .log-entry.error { color: #cc0000; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Answer Verification System Test</h1>
+        
+        <div class="test-section">
+            <h2>Test 1: Data Structure Verification</h2>
+            <p>Testing that questions are properly normalized with .question property</p>
+            <div class="test-control">
+                <button onclick="testDataStructure()">Run Data Structure Test</button>
+            </div>
+            <div id="test1-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test 2: Question Extraction</h2>
+            <p>Testing the submitTaskAnswer question extraction logic</p>
+            <div class="test-control">
+                <button onclick="testQuestionExtraction()">Run Extraction Test</button>
+            </div>
+            <div id="test2-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test 3: Full Answer Verification</h2>
+            <p>Test actual API call for answer verification</p>
+            
+            <div class="test-control">
+                <label>Question:</label>
+                <textarea id="test-question" placeholder="Enter a test question...">What is a variable in programming?</textarea>
+            </div>
+            
+            <div class="test-control">
+                <label>Student Answer:</label>
+                <textarea id="test-answer" placeholder="Enter a test answer...">A variable is a named container that stores a value</textarea>
+            </div>
+            
+            <div class="test-control">
+                <button onclick="testFullVerification()">Verify Answer</button>
+            </div>
+            
+            <div id="test3-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test 4: Simulated Task Flow</h2>
+            <p>Test the complete task answer submission flow</p>
+            <div class="test-control">
+                <button onclick="testSimulatedTaskFlow()">Simulate Full Task Flow</button>
+            </div>
+            <div id="test4-result" class="result"></div>
+        </div>
+
+        <div class="log-section">
+            <h3>📋 Test Logs</h3>
+            <div id="test-logs"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simple logger
+        const testLogs = [];
+        
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            testLogs.push({ message: logEntry, type });
+            
+            const logsDiv = document.getElementById('test-logs');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = logEntry;
+            logsDiv.appendChild(entry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        function displayResult(testNum, success, message, details = '') {
+            const resultDiv = document.getElementById(`test${testNum}-result`);
+            resultDiv.className = `result ${success ? 'success' : 'error'}`;
+            resultDiv.innerHTML = `<strong>${success ? '✅ PASSED' : '❌ FAILED'}</strong><br>${message}${details ? '<br><br>' + details : ''}`;
+        }
+
+        // Test 1: Data Structure
+        function testDataStructure() {
+            addLog('Starting data structure test...', 'info');
+            
+            try {
+                // Simulate API response
+                const apiResponse = {
+                    questions: [
+                        "What is a variable?",
+                        "What is a function?",
+                        "What is a loop?"
+                    ]
+                };
+                
+                addLog(`API returned ${apiResponse.questions.length} questions`, 'info');
+                
+                // Normalize questions like renderTaskQuestions does
+                const normalizedQuestions = apiResponse.questions.map((q, idx) => {
+                    if (typeof q === 'string') {
+                        return { question: q };
+                    } else if (q && typeof q === 'object' && q.question) {
+                        return q;
+                    } else if (q && typeof q === 'object') {
+                        return { question: q.text || q.title || String(q) };
+                    } else {
+                        return { question: String(q) };
+                    }
+                });
+                
+                addLog(`Normalized to ${normalizedQuestions.length} objects`, 'success');
+                
+                // Verify all have .question property
+                const allValid = normalizedQuestions.every(q => q.question && typeof q.question === 'string');
+                
+                if (allValid) {
+                    const details = normalizedQuestions.map((q, i) => `Q${i+1}: "${q.question.substring(0, 50)}..."`).join('<br>');
+                    displayResult(1, true, 'All questions properly normalized with .question property', details);
+                    addLog('All questions have valid .question property', 'success');
+                } else {
+                    displayResult(1, false, 'Some questions missing .question property');
+                    addLog('Found invalid question structure', 'error');
+                }
+            } catch (error) {
+                displayResult(1, false, error.message);
+                addLog(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Test 2: Question Extraction (like submitTaskAnswer does)
+        function testQuestionExtraction() {
+            addLog('Starting question extraction test...', 'info');
+            
+            try {
+                // Simulate normalized questions
+                const testQuestions = [
+                    { question: "What is a variable?" },
+                    "What is a function?",  // Test string fallback
+                    { text: "What is a loop?" },  // Test alternate property
+                ];
+                
+                window.currentTaskQuestions = testQuestions;
+                addLog('Set up test questions with mixed formats', 'info');
+                
+                const results = [];
+                let successCount = 0;
+                
+                for (let i = 0; i < testQuestions.length; i++) {
+                    const questionObj = window.currentTaskQuestions[i];
+                    
+                    // This is the exact extraction logic from submitTaskAnswer
+                    let questionText = '';
+                    if (typeof questionObj === 'string') {
+                        questionText = questionObj;
+                    } else if (questionObj && typeof questionObj === 'object') {
+                        questionText = questionObj.question || questionObj.text || '';
+                        if (!questionText) {
+                            questionText = String(questionObj).substring(0, 500);
+                        }
+                    } else if (questionObj) {
+                        questionText = String(questionObj);
+                    }
+                    
+                    questionText = String(questionText).trim();
+                    
+                    if (questionText.length > 0) {
+                        results.push(`Q${i+1}: ✅ "${questionText.substring(0, 40)}..."`);
+                        successCount++;
+                    } else {
+                        results.push(`Q${i+1}: ❌ Empty after extraction`);
+                    }
+                }
+                
+                if (successCount === testQuestions.length) {
+                    displayResult(2, true, `Successfully extracted ${successCount}/${testQuestions.length} questions`, results.join('<br>'));
+                    addLog(`All ${successCount} questions extracted successfully`, 'success');
+                } else {
+                    displayResult(2, false, `Only extracted ${successCount}/${testQuestions.length}`, results.join('<br>'));
+                    addLog(`Failed to extract ${testQuestions.length - successCount} questions`, 'error');
+                }
+            } catch (error) {
+                displayResult(2, false, error.message);
+                addLog(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Test 3: Full Verification
+        async function testFullVerification() {
+            addLog('Starting full verification test...', 'info');
+            
+            const question = document.getElementById('test-question').value.trim();
+            const answer = document.getElementById('test-answer').value.trim();
+            
+            if (!question) {
+                displayResult(3, false, 'Please enter a question');
+                addLog('Question is required', 'error');
+                return;
+            }
+            
+            if (!answer) {
+                displayResult(3, false, 'Please enter an answer');
+                addLog('Answer is required', 'error');
+                return;
+            }
+            
+            try {
+                addLog(`Question: "${question.substring(0, 50)}..."`, 'info');
+                addLog(`Answer: "${answer.substring(0, 50)}..."`, 'info');
+                
+                const apiUrl = 'http://127.0.0.1:8000/api';
+                const params = new URLSearchParams({
+                    question: question.trim(),
+                    answer: answer.trim()
+                });
+                
+                addLog(`Calling API: ${apiUrl}/verify-answer?...`, 'info');
+                
+                const response = await fetch(`${apiUrl}/verify-answer?${params}`, {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                addLog('API response received', 'success');
+                addLog(`Response: ${JSON.stringify(data).substring(0, 100)}...`, 'info');
+                
+                // Extract result from either response.data or response
+                let isCorrect = false;
+                let feedback = 'No feedback available';
+                
+                if (data && data.data) {
+                    isCorrect = data.data.is_correct === true;
+                    feedback = data.data.feedback || feedback;
+                } else if (data && data.is_correct !== undefined) {
+                    isCorrect = data.is_correct === true;
+                    feedback = data.feedback || feedback;
+                }
+                
+                const details = `<strong>Is Correct:</strong> ${isCorrect ? 'Yes ✅' : 'No ❌'}<br><strong>Feedback:</strong> ${feedback}`;
+                displayResult(3, true, 'Answer verification successful', details);
+                addLog(`Verification result: isCorrect=${isCorrect}`, 'success');
+                
+            } catch (error) {
+                displayResult(3, false, `API Error: ${error.message}`);
+                addLog(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Test 4: Simulated Task Flow
+        async function testSimulatedTaskFlow() {
+            addLog('Starting simulated task flow...', 'info');
+            
+            try {
+                // Simulate task data
+                const mockQuestions = [
+                    { question: "What is a variable?" },
+                    { question: "What is a function?" }
+                ];
+                
+                window.currentTaskQuestions = mockQuestions;
+                window.taskAnswers = new Array(mockQuestions.length).fill(null);
+                window.taskScores = new Array(mockQuestions.length).fill(0);
+                
+                addLog(`Created mock task with ${mockQuestions.length} questions`, 'info');
+                
+                // Simulate submitting first question
+                const questionIndex = 0;
+                const testAnswer = "A container that stores a value";
+                
+                window.taskAnswers[questionIndex] = testAnswer;
+                addLog(`Stored answer for Q${questionIndex + 1}`, 'info');
+                
+                // Extract question like submitTaskAnswer does
+                const questionObj = window.currentTaskQuestions[questionIndex];
+                let questionText = '';
+                if (typeof questionObj === 'string') {
+                    questionText = questionObj;
+                } else if (questionObj && typeof questionObj === 'object') {
+                    questionText = questionObj.question || questionObj.text || '';
+                }
+                
+                if (!questionText.trim()) {
+                    throw new Error('Question extraction failed');
+                }
+                
+                addLog(`Extracted question: "${questionText}"`, 'success');
+                
+                // Simulate API call
+                const apiUrl = 'http://127.0.0.1:8000/api';
+                const params = new URLSearchParams({
+                    question: questionText.trim(),
+                    answer: testAnswer.trim()
+                });
+                
+                addLog(`Calling verification API...`, 'info');
+                const response = await fetch(`${apiUrl}/verify-answer?${params}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                const isCorrect = data?.data?.is_correct || data?.is_correct || false;
+                const score = isCorrect ? 1 : 0;
+                
+                window.taskScores[questionIndex] = score;
+                addLog(`Verification complete. Score: ${score}`, 'success');
+                
+                // Calculate final score
+                const correctCount = window.taskScores.filter(s => s === 1).length;
+                const totalCount = window.taskScores.length;
+                const finalScore = Math.round((correctCount / totalCount) * 100);
+                
+                const details = `Answered ${totalCount} questions, ${correctCount} correct<br>Final Score: ${finalScore}%`;
+                displayResult(4, true, 'Simulated task flow completed successfully', details);
+                addLog(`Final score: ${finalScore}%`, 'success');
+                
+            } catch (error) {
+                displayResult(4, false, `Error: ${error.message}`);
+                addLog(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Initial log
+        addLog('Test page loaded - ready to run tests', 'success');
+    </script>
+</body>
+</html>

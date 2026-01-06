@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes - Career Readiness AI Copilot</title>
+    <link rel="stylesheet" href="../codecore.css/style.css">
+</head>
+<body>
+    <header>
+        <!-- Background Video INSIDE Header -->
+        <video id="bgVideo" class="header-bg-video" muted loop playsinline autoplay>
+            <source src="../introvedio.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        
+        <div class="header-content">
+            <h1>Career Readiness AI Copilot</h1>
+            <p class="tagline">Plan · Learn · Practice · Master</p>
+            
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav class="navbar" id="navbar">
+                <a href="index.html">Home</a>
+                <a href="subjects.html">Subjects</a>
+                <a href="task.html">Tasks</a>
+                <a href="doubts.html">Doubts</a>
+                <a href="quize.html">Quiz</a>
+                <a href="progress.html">Progress</a>
+                <a href="notes.html" class="active">Notes</a>
+            </nav>
+        </div>
+    </header>
+    <main class="content">
+        <section id="notes" class="section active">
+            <h2>📝 My Notes</h2>
+            
+            <div style="margin-bottom: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                <p style="margin: 0; color: #0f172a;"><strong>💡 Tip:</strong> Your notes are auto-saved as you type. View all saved notes in the <a href="save.html" style="color: #3b82f6; text-decoration: underline;">Saved Notes</a> page.</p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="noteTitle" style="display: block; margin-bottom: 8px; font-weight: 600; color: #0f172a;">Note Title:</label>
+                <input type="text" id="noteTitle" placeholder="Enter note title (e.g., Python Concepts, Interview Prep...)" style="width: 100%; padding: 10px; border: 2px solid #cbd5f5; border-radius: 6px; font-size: 14px;">
+            </div>
+            
+            <div style="position: relative;">
+                <label for="noteContent" style="display: block; margin-bottom: 8px; font-weight: 600; color: #0f172a;">Note Content:</label>
+                <textarea id="noteContent" rows="12" placeholder="Start typing your notes here... Word suggestions will appear as you type." style="width: 100%; padding: 12px; border: 2px solid #cbd5f5; border-radius: 6px; font-size: 14px; font-family: 'Segoe UI', sans-serif; line-height: 1.6;"></textarea>
+                
+                <!-- Suggestions dropdown -->
+                <div id="suggestions" style="display: none; position: absolute; background: white; border: 2px solid #3b82f6; border-radius: 6px; max-height: 200px; overflow-y: auto; width: 250px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000;"></div>
+            </div>
+            
+            <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
+                <button id="saveBtn" onclick="saveNote()" style="background: #10b981; color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; display: none;">
+                    💾 Save Note
+                </button>
+                <button onclick="clearNote()" style="background: #6b7280; color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                    🗑️ Clear
+                </button>
+                <button onclick="window.location.href='save.html'" style="background: #3b82f6; color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                    📂 View All Notes
+                </button>
+                <span id="autoSaveStatus" style="color: #10b981; font-size: 13px; margin-left: 10px;"></span>
+            </div>
+            
+            <div id="savedNotesPreview" style="margin-top: 30px;">
+                <h3>Recent Notes (Last 3)</h3>
+                <div id="recentNotesList"></div>
+            </div>
+        </section>
+    </main>
+    
+    
+    <script src="../codecore.js/script.js"></script>
+    <script>
+        let autoSaveTimer = null;
+        let currentCursorPosition = 0;
+        
+        const noteContent = document.getElementById('noteContent');
+        const noteTitle = document.getElementById('noteTitle');
+        const saveBtn = document.getElementById('saveBtn');
+        const suggestionsDiv = document.getElementById('suggestions');
+        
+        // Show save button when user types
+        noteContent.addEventListener('input', function() {
+            saveBtn.style.display = 'inline-block';
+            clearTimeout(autoSaveTimer);
+            
+            // Auto-save after 2 seconds of no typing
+            autoSaveTimer = setTimeout(() => {
+                autoSaveNote();
+            }, 2000);
+            
+            // Show AI-powered suggestions based on user's typing history
+            showSmartSuggestions();
+        });
+        
+        noteTitle.addEventListener('input', function() {
+            saveBtn.style.display = 'inline-block';
+        });
+        
+        // Handle suggestion selection
+        noteContent.addEventListener('keyup', function(e) {
+            currentCursorPosition = this.selectionStart;
+            
+            if (e.key === 'Escape') {
+                hideSuggestions();
+            }
+        });
+        
+        /**
+         * AI-powered smart suggestions based on user's note history and context
+         */
+        function showSmartSuggestions() {
+            const text = noteContent.value;
+            const cursorPos = noteContent.selectionStart;
+            
+            // Get the word being typed
+            const textBeforeCursor = text.substring(0, cursorPos);
+            const words = textBeforeCursor.split(/\s+/);
+            const currentWord = words[words.length - 1].toLowerCase();
+            
+            if (currentWord.length < 2) {
+                hideSuggestions();
+                return;
+            }
+            
+            // Get dynamic keywords from user's previous notes
+            const savedNotes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+            const quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            const subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
+            
+            // Extract unique words from user's history
+            const userKeywords = new Set();
+            
+            // From notes
+            savedNotes.forEach(note => {
+                const noteWords = (note.content + ' ' + note.title).split(/\W+/)
+                    .filter(w => w.length > 3)
+                    .map(w => w.toLowerCase());
+                noteWords.forEach(w => userKeywords.add(w));
+            });
+            
+            // From quiz topics
+            quizHistory.forEach(quiz => {
+                if (quiz.topic) {
+                    quiz.topic.split(/\s+/).forEach(w => {
+                        if (w.length > 3) userKeywords.add(w.toLowerCase());
+                    });
+                }
+            });
+            
+            // From subjects
+            subjects.forEach(subject => {
+                userKeywords.add(subject.name.toLowerCase());
+                subject.topics.forEach(topic => {
+                    topic.name.split(/\s+/).forEach(w => {
+                        if (w.length > 3) userKeywords.add(w.toLowerCase());
+                    });
+                });
+            });
+            
+            // Convert to array and capitalize
+            const dynamicSuggestions = Array.from(userKeywords)
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1));
+            
+            // Filter suggestions based on current input
+            const matches = dynamicSuggestions.filter(keyword => 
+                keyword.toLowerCase().startsWith(currentWord) && 
+                keyword.toLowerCase() !== currentWord
+            );
+            
+            if (matches.length === 0) {
+                hideSuggestions();
+                return;
+            }
+            
+            // Position suggestions near cursor
+            const textarea = noteContent;
+            
+            suggestionsDiv.innerHTML = matches.slice(0, 8).map(match => 
+                `<div class="suggestion-item" onclick="insertSuggestion('${match}')" style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #e5e7eb; transition: background 0.2s;" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='white'">${match}</div>`
+            ).join('');
+            
+            suggestionsDiv.style.display = 'block';
+            suggestionsDiv.style.left = '12px';
+            suggestionsDiv.style.top = (textarea.offsetTop + 40) + 'px';
+        }
+        
+        function hideSuggestions() {
+            suggestionsDiv.style.display = 'none';
+        }
+        
+        function insertSuggestion(word) {
+            const text = noteContent.value;
+            const cursorPos = noteContent.selectionStart;
+            
+            const textBeforeCursor = text.substring(0, cursorPos);
+            const textAfterCursor = text.substring(cursorPos);
+            
+            const words = textBeforeCursor.split(/\s+/);
+            words[words.length - 1] = word;
+            
+            const newText = words.join(' ') + textAfterCursor;
+            noteContent.value = newText;
+            
+            const newCursorPos = words.join(' ').length;
+            noteContent.setSelectionRange(newCursorPos, newCursorPos);
+            noteContent.focus();
+            
+            hideSuggestions();
+            saveBtn.style.display = 'inline-block';
+        }
+        
+        function autoSaveNote() {
+            const title = noteTitle.value.trim();
+            const content = noteContent.value.trim();
+            
+            if (!content) return;
+            
+            const notes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+            const timestamp = new Date().toISOString();
+            
+            // Check if this is an edit of the last note
+            if (notes.length > 0 && notes[0].title === title) {
+                notes[0].content = content;
+                notes[0].timestamp = timestamp;
+                notes[0].modified = true;
+            } else {
+                const note = {
+                    id: Date.now(),
+                    title: title || 'Untitled Note',
+                    content: content,
+                    timestamp: timestamp,
+                    modified: false
+                };
+                notes.unshift(note);
+            }
+            
+            localStorage.setItem('savedNotes', JSON.stringify(notes));
+            
+            const statusSpan = document.getElementById('autoSaveStatus');
+            statusSpan.textContent = '✓ Auto-saved at ' + new Date().toLocaleTimeString();
+            setTimeout(() => {
+                statusSpan.textContent = '';
+            }, 3000);
+            
+            loadRecentNotes();
+        }
+        
+        function saveNote() {
+            const title = noteTitle.value.trim();
+            const content = noteContent.value.trim();
+            
+            if (!content) {
+                alert('⚠️ Please enter some content before saving!');
+                return;
+            }
+            
+            const notes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+            
+            const note = {
+                id: Date.now(),
+                title: title || 'Untitled Note',
+                content: content,
+                timestamp: new Date().toISOString()
+            };
+            
+            notes.unshift(note);
+            localStorage.setItem('savedNotes', JSON.stringify(notes));
+            
+            alert('✅ Note saved successfully!');
+            saveBtn.style.display = 'none';
+            
+            // Clear form
+            noteTitle.value = '';
+            noteContent.value = '';
+            
+            loadRecentNotes();
+        }
+        
+        function clearNote() {
+            if (confirm('Clear current note?')) {
+                noteTitle.value = '';
+                noteContent.value = '';
+                saveBtn.style.display = 'none';
+                hideSuggestions();
+            }
+        }
+        
+        function loadRecentNotes() {
+            const notes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+            const recentNotes = notes.slice(0, 3);
+            
+            const listDiv = document.getElementById('recentNotesList');
+            
+            if (recentNotes.length === 0) {
+                listDiv.innerHTML = '<p style="color: #666; font-style: italic;">No notes yet. Start typing to create your first note!</p>';
+                return;
+            }
+            
+            listDiv.innerHTML = recentNotes.map(note => {
+                const date = new Date(note.timestamp).toLocaleDateString();
+                const preview = note.content.substring(0, 100) + (note.content.length > 100 ? '...' : '');
+                return `
+                    <div style="padding: 12px; background: #f9fafb; border-left: 4px solid #3b82f6; border-radius: 6px; margin-bottom: 10px;">
+                        <h4 style="margin: 0 0 5px 0; color: #0f172a;">${note.title}</h4>
+                        <p style="margin: 5px 0; color: #666; font-size: 13px;">${preview}</p>
+                        <p style="margin: 5px 0 0 0; color: #999; font-size: 12px;">📅 ${date}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Load recent notes on page load
+        loadRecentNotes();
+        
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target !== noteContent && !suggestionsDiv.contains(e.target)) {
+                hideSuggestions();
+            }
+        });
+    </script>
+    <script src="../codecore.js/bg-video.js"></script>
+</body>
+</html>

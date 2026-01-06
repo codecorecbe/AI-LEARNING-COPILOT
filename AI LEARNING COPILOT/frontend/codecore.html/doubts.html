@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Doubt Solver - Career Readiness AI Copilot</title>
+    <link rel="stylesheet" href="../codecore.css/style.css">
+</head>
+<body>
+    <!-- Responsive Navbar -->
+    <header>
+        <!-- Background Video INSIDE Header -->
+        <video id="bgVideo" class="header-bg-video" muted loop playsinline autoplay>
+            <source src="../introvedio.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        
+        <div class="header-content">
+            <h1>Career Readiness AI Copilot</h1>
+            <p class="tagline">Plan · Learn · Practice · Master</p>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav class="navbar" id="navbar">
+                <a href="index.html">Home</a>
+                <a href="subjects.html">Subjects</a>
+                <a href="task.html">Tasks</a>
+                <a href="doubts.html" class="active">Doubts</a>
+                <a href="quize.html">Quiz</a>
+                <a href="progress.html">Progress</a>
+                <a href="notes.html">Notes</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="content">
+        <section id="doubts" class="section active">
+            <h2>🤖 AI Doubt Solver</h2>
+            <p style="color: #6b7280; margin-bottom: 24px;">Ask any question - AI will provide instant answers and explanations!</p>
+            
+            <div class="doubt-container">
+                <!-- Input Section -->
+                <div class="doubt-input-section">
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <textarea 
+                            id="doubtInput" 
+                            placeholder="Ask anything: What is recursion? How does async work? Explain OOP..."
+                            onkeydown="handleDoubtEnter(event)"
+                            style="flex: 1; min-height: 120px; padding: 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 15px; resize: vertical; font-family: inherit; line-height: 1.6;"
+                        ></textarea>
+                    </div>
+                    <button 
+                        onclick="submitDoubt()" 
+                        class="btn-generate" 
+                        style="margin-top: 16px; width: 100%; justify-content: center;"
+                    >
+                        <span class="btn-text">Get AI Answer</span>
+                        <span class="btn-icon">✨</span>
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div id="doubtLoading" class="loading-container" style="display: none; padding: 40px;">
+                    <div class="loading-spinner"></div>
+                    <p>AI is thinking...</p>
+                </div>
+
+                <!-- Solution Display Section -->
+                <div id="solutionSection" style="display: none; margin-top: 30px;">
+                    <div class="solution-card" style="background: white; border: 2px solid #667eea; border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);">
+                        <h3 style="color: #667eea; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            💡 AI Answer
+                        </h3>
+                        <div id="questionDisplay" style="background: #f8f9ff; padding: 16px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                            <strong style="color: #0f172a;">Your Question:</strong>
+                            <p id="questionText" style="margin-top: 8px; color: #374151;"></p>
+                        </div>
+                        <div id="solutionContent" class="solution-content" style="line-height: 1.8; color: #1f2937;"></div>
+                        <button 
+                            onclick="clearDoubt()" 
+                            class="btn-primary" 
+                            style="margin-top: 20px; background: #f59e0b;"
+                        >
+                            Ask Another Question
+                        </button>
+                    </div>
+                </div>
+
+                <!-- History Section -->
+                <div id="historySection" style="margin-top: 40px;">
+                    <h3 style="color: #0f172a; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                        📝 Recent Doubts
+                        <span id="historyCount" style="background: #e0e7ff; color: #667eea; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;"></span>
+                    </h3>
+                    <div id="doubtHistory" class="doubt-history-list"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading & Error Indicators -->
+    <div id="loading-indicator" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; z-index: 1000; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+        <div style="border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
+        <p id="loading-text">Loading doubts...</p>
+    </div>
+    <div id="error-container" style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1001;"></div>
+    <div id="success-container" style="position: fixed; top: 20px; left: 20px; width: 300px; z-index: 1001;"></div>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <!-- Load API Client FIRST, then Scripts -->
+    <script src="../codecore.js/api.js"></script>
+    <script>
+        // AI-Powered Doubt Solver - Connected to Real AI Backend
+        let doubtHistory = JSON.parse(localStorage.getItem('doubtHistory')) || [];
+
+        // Format AI response with HTML styling
+        function formatAnswer(answer, keyPoints, videoSuggestions) {
+            let html = `<div style="font-size: 15px;">`;
+            
+            // Main answer
+            html += `<div style="background: #f9fafb; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #667eea;">`;
+            html += `<p style="margin-bottom: 12px;"><strong style="color: #667eea;">📚 AI Answer:</strong></p>`;
+            html += `<div style="line-height: 1.8; color: #1f2937;">${answer.replace(/\n/g, '<br>')}</div>`;
+            html += `</div>`;
+            
+            // Key points (if available)
+            if (keyPoints && keyPoints.length > 0) {
+                html += `<div style="margin-bottom: 20px;">`;
+                html += `<p style="margin-bottom: 12px;"><strong style="color: #0f172a;">🎯 Key Points:</strong></p>`;
+                html += `<ul style="margin-left: 20px; line-height: 2;">`;
+                keyPoints.forEach(point => {
+                    html += `<li>${point}</li>`;
+                });
+                html += `</ul>`;
+                html += `</div>`;
+            }
+            
+            // Video suggestions (if available)
+            if (videoSuggestions && videoSuggestions.length > 0) {
+                html += `<div style="margin-top: 24px; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">`;
+                html += `<p style="margin-bottom: 16px; font-weight: 600; font-size: 16px;">🎥 Recommended Videos to Learn More:</p>`;
+                html += `<div style="display: grid; gap: 12px;">`;
+                videoSuggestions.forEach((video, idx) => {
+                    const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(video.search_query)}`;
+                    html += `
+                        <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);">
+                            <div style="display: flex; align-items: start; gap: 12px;">
+                                <span style="background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 8px; font-weight: 600;">${idx + 1}</span>
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0 0 8px 0; font-size: 15px;">${video.title}</h4>
+                                    <p style="margin: 0 0 12px 0; font-size: 13px; opacity: 0.9;">${video.description}</p>
+                                    <a href="${youtubeSearchUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: #ff0000; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                        <span>▶</span> Watch on YouTube
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                html += `</div>`;
+            }
+            
+            html += `<p style="margin-top: 20px; padding: 16px; background: #f3f4f6; border-radius: 8px; font-style: italic; color: #4b5563;">💡 Generated by Google Gemini AI - Real-time intelligent answers!</p>`;
+            html += `</div>`;
+            
+            return html;
+        }
+
+        async function submitDoubt() {
+            const doubtInput = document.getElementById('doubtInput');
+            const question = doubtInput.value.trim();
+            
+            if (!question) {
+                alert('Please enter your question!');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('doubtLoading').style.display = 'flex';
+            document.getElementById('solutionSection').style.display = 'none';
+
+            try {
+                // Call real AI API
+                const response = await apiClient.answerDoubt(question, '');
+                
+                // Format and display the answer
+                const formattedAnswer = formatAnswer(
+                    response.answer, 
+                    response.key_points,
+                    response.video_suggestions || []
+                );
+                
+                document.getElementById('questionText').textContent = question;
+                document.getElementById('solutionContent').innerHTML = formattedAnswer;
+                
+                // Hide loading, show solution
+                document.getElementById('doubtLoading').style.display = 'none';
+                document.getElementById('solutionSection').style.display = 'block';
+                document.getElementById('solutionSection').scrollIntoView({ behavior: 'smooth' });
+                
+                // Add to history
+                doubtHistory.unshift({
+                    question: question,
+                    answer: formattedAnswer,
+                    timestamp: new Date().toLocaleString()
+                });
+                
+                // Keep only last 10
+                if (doubtHistory.length > 10) {
+                    doubtHistory = doubtHistory.slice(0, 10);
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('doubtHistory', JSON.stringify(doubtHistory));
+                
+                // Update history display
+                updateHistory();
+                
+                // Clear input
+                doubtInput.value = '';
+                
+            } catch (error) {
+                // Hide loading
+                document.getElementById('doubtLoading').style.display = 'none';
+                
+                // Show error
+                console.error('Error getting AI answer:', error);
+                alert(`❌ Error: ${error.message}\n\nPlease make sure the backend server is running at http://localhost:8000`);
+            }
+        }
+
+        function clearDoubt() {
+            document.getElementById('solutionSection').style.display = 'none';
+            document.getElementById('doubtInput').value = '';
+            document.getElementById('doubtInput').focus();
+        }
+
+        function handleDoubtEnter(event) {
+            if (event.key === 'Enter' && event.ctrlKey) {
+                submitDoubt();
+            }
+        }
+
+        function updateHistory() {
+            const historyList = document.getElementById('doubtHistory');
+            const historyCount = document.getElementById('historyCount');
+            
+            historyCount.textContent = doubtHistory.length;
+            
+            if (doubtHistory.length === 0) {
+                historyList.innerHTML = '<div class="empty-state" style="padding: 40px; text-align: center;"><p style="color: #9ca3af;">No doubts asked yet. Ask your first question!</p></div>';
+                return;
+            }
+            
+            historyList.innerHTML = doubtHistory.map((item, idx) => `
+                <div class="history-item" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s ease;" onclick="viewHistoryItem(${idx})">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                        <strong style="color: #0f172a; flex: 1;">${item.question}</strong>
+                        <span style="color: #9ca3af; font-size: 12px; white-space: nowrap; margin-left: 12px;">${item.timestamp}</span>
+                    </div>
+                    <p style="color: #6b7280; font-size: 13px; margin: 0;">Click to view full answer...</p>
+                </div>
+            `).join('');
+        }
+
+        function viewHistoryItem(index) {
+            const item = doubtHistory[index];
+            document.getElementById('questionText').textContent = item.question;
+            document.getElementById('solutionContent').innerHTML = item.answer;
+            document.getElementById('solutionSection').style.display = 'block';
+            document.getElementById('solutionSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize history on load
+        updateHistory();
+    </script>
+    <script src="../codecore.js/bg-video.js"></script>
+</body>
+</html>

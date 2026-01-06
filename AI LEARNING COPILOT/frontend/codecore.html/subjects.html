@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subjects - Career Readiness AI Copilot</title>
+    <link rel="stylesheet" href="../codecore.css/style.css">
+</head>
+<body>
+    <!-- Responsive Navbar -->
+    <header>
+        <!-- Background Video INSIDE Header -->
+        <video id="bgVideo" class="header-bg-video" muted loop playsinline autoplay>
+            <source src="../introvedio.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        
+        <div class="header-content">
+            <h1>Career Readiness AI Copilot</h1>
+            <p class="tagline">Plan · Learn · Practice · Master</p>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav class="navbar" id="navbar">
+                <a href="index.html">Home</a>
+                <a href="subjects.html" class="active">Subjects</a>
+                <a href="task.html">Tasks</a>
+                <a href="doubts.html">Doubts</a>
+                <a href="quize.html">Quiz</a>
+                <a href="progress.html">Progress</a>
+                <a href="notes.html">Notes</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="content">
+        <section id="subjects" class="section active">
+            <h2>🎯 Explore Any Subject</h2>
+            
+            <!-- AI-Powered Subject Input -->
+            <div class="subject-input-container">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="subjectInput" 
+                        placeholder="Type any subject you want to learn..."
+                        onkeypress="handleEnterKey(event)"
+                    >
+                    <button onclick="generateSubject()" class="btn-generate">
+                        <span class="btn-text">Generate Topics</span>
+                        <span class="btn-icon">✨</span>
+                    </button>
+                </div>
+                <p class="hint">Type ANY subject or programming language - AI will generate relevant topics and questions!</p>
+            </div>
+
+            <!-- Generated Subjects Display -->
+            <div id="subjectsContainer" class="subjects-grid">
+                <!-- Dynamic subject cards will be generated here -->
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-container" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>AI is generating topics and questions...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">📚</div>
+                <h3>No Subjects Yet</h3>
+                <p>Enter any subject above to get started with AI-generated topics and questions</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading & Error Indicators -->
+    <div id="loading-indicator" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; z-index: 1000; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+        <div style="border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
+        <p id="loading-text">Generating with AI...</p>
+    </div>
+    <div id="error-container" style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1001;"></div>
+    <div id="success-container" style="position: fixed; top: 20px; left: 20px; width: 300px; z-index: 1001;"></div>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <!-- Load API Client FIRST, then Scripts -->
+    <script src="../codecore.js/api.js"></script>
+    <script src="../codecore.js/script.js"></script>
+    <script src="../codecore.js/bg-video.js"></script>
+</body>
+</html>

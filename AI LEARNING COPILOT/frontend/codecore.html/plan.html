@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Plan - Career Readiness AI Copilot</title>
+    <link rel="stylesheet" href="../codecore.css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Career Readiness AI Copilot</h1>
+        <p class="tagline">Plan · Learn · Practice · Master</p>
+        
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <nav class="navbar" id="navbar">
+            <a href="index.html">Home</a>
+            <a href="subjects.html">Subjects</a>
+            <a href="task.html">Tasks</a>
+            <a href="doubts.html">Doubts</a>
+            <a href="quize.html">Quiz</a>
+            <a href="progress.html">Progress</a>
+            <a href="notes.html">Notes</a>
+        </nav>
+    </header>
+    <main class="content">
+        <section id="plan" class="section active">
+            <h2>📅 My Study Plan</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Create your personalized daily study schedule</p>
+            
+            <!-- Add New Plan Item -->
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                <h3 style="margin-top: 0;">➕ Add Study Block</h3>
+                <div style="display: grid; gap: 15px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #0f172a;">Time Slot:</label>
+                        <input type="text" id="timeSlot" placeholder="e.g., 6:00 AM - 8:00 AM" style="width: 100%; padding: 10px; border: 2px solid #cbd5f5; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #0f172a;">Activity:</label>
+                        <input type="text" id="activity" placeholder="e.g., Learn Python Basics" style="width: 100%; padding: 10px; border: 2px solid #cbd5f5; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #0f172a;">Description (optional):</label>
+                        <input type="text" id="description" placeholder="e.g., Focus on loops and functions" style="width: 100%; padding: 10px; border: 2px solid #cbd5f5; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <button onclick="addPlanItem()" style="background: #10b981; color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                        ✅ Add to Plan
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI Suggestions -->
+            <div id="aiSuggestions" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 15px 0; color: white;">🤖 AI Suggestions</h3>
+                <p id="suggestionText" style="margin: 0; line-height: 1.6; opacity: 0.95;"></p>
+                <button onclick="applySuggestions()" style="margin-top: 15px; background: white; color: #667eea; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                    Apply Suggestions
+                </button>
+            </div>
+
+            <!-- Study Plan List -->
+            <div id="planList">
+                <div id="emptyPlan" style="text-align: center; padding: 60px 20px; color: #6b7280;">
+                    <p style="font-size: 48px; margin: 0;">📚</p>
+                    <p style="font-size: 18px; margin: 10px 0 5px 0; color: #0f172a;">No study plan yet</p>
+                    <p style="font-size: 14px; margin: 0;">Add your first study block above to get started!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <script src="../codecore.js/script.js"></script>
+    <script>
+        function addPlanItem() {
+            const timeSlot = document.getElementById('timeSlot').value.trim();
+            const activity = document.getElementById('activity').value.trim();
+            const description = document.getElementById('description').value.trim();
+
+            if (!timeSlot || !activity) {
+                alert('⚠️ Please enter both time slot and activity!');
+                return;
+            }
+
+            const plans = JSON.parse(localStorage.getItem('studyPlans') || '[]');
+            
+            const newPlan = {
+                id: Date.now(),
+                timeSlot,
+                activity,
+                description,
+                createdAt: new Date().toISOString()
+            };
+
+            plans.push(newPlan);
+            localStorage.setItem('studyPlans', JSON.stringify(plans));
+
+            // Clear inputs
+            document.getElementById('timeSlot').value = '';
+            document.getElementById('activity').value = '';
+            document.getElementById('description').value = '';
+
+            renderPlans();
+            checkForSuggestions();
+        }
+
+        function deletePlan(id) {
+            if (confirm('Remove this study block?')) {
+                let plans = JSON.parse(localStorage.getItem('studyPlans') || '[]');
+                plans = plans.filter(p => p.id !== id);
+                localStorage.setItem('studyPlans', JSON.stringify(plans));
+                renderPlans();
+            }
+        }
+
+        function renderPlans() {
+            const plans = JSON.parse(localStorage.getItem('studyPlans') || '[]');
+            const planList = document.getElementById('planList');
+            const emptyPlan = document.getElementById('emptyPlan');
+
+            if (plans.length === 0) {
+                emptyPlan.style.display = 'block';
+                return;
+            }
+
+            emptyPlan.style.display = 'none';
+
+            planList.innerHTML = plans.map((plan, index) => `
+                <div class="plan-item" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px; border-left: 4px solid #3b82f6;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 8px 0; color: #0f172a;">${index + 1}. ${plan.activity}</h4>
+                            <p style="margin: 5px 0; color: #6b7280; font-size: 14px;">⏰ ${plan.timeSlot}</p>
+                            ${plan.description ? `<p style="margin: 5px 0; color: #6b7280; font-size: 14px;">📝 ${plan.description}</p>` : ''}
+                        </div>
+                        <button onclick="deletePlan(${plan.id})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function checkForSuggestions() {
+            const plans = JSON.parse(localStorage.getItem('studyPlans') || '[]');
+            const subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
+            const quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            
+            const aiSuggestions = document.getElementById('aiSuggestions');
+            const suggestionText = document.getElementById('suggestionText');
+
+            if (plans.length === 0 && subjects.length > 0) {
+                suggestionText.textContent = `You have ${subjects.length} subject(s) in your list. Consider adding study blocks for: ${subjects.slice(0, 3).map(s => s.name).join(', ')}. Balance theory learning, practice, and revision for best results.`;
+                aiSuggestions.style.display = 'block';
+            } else if (plans.length > 0 && quizHistory.length > 0) {
+                const avgScore = Math.round(quizHistory.reduce((sum, q) => sum + q.score, 0) / quizHistory.length);
+                if (avgScore < 70) {
+                    suggestionText.textContent = `Your average quiz score is ${avgScore}%. Consider adding more revision blocks and practice sessions to your study plan. Focus on weak areas identified in your progress report.`;
+                    aiSuggestions.style.display = 'block';
+                } else {
+                    aiSuggestions.style.display = 'none';
+                }
+            } else {
+                aiSuggestions.style.display = 'none';
+            }
+        }
+
+        function applySuggestions() {
+            const subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
+            
+            if (subjects.length > 0) {
+                const timeSlots = ['6:00 AM - 8:00 AM', '9:00 AM - 11:00 AM', '2:00 PM - 4:00 PM', '7:00 PM - 9:00 PM'];
+                const activities = ['Theory & Concepts', 'Practice & Coding', 'Revision & Notes', 'Quiz & Assessment'];
+                
+                subjects.slice(0, 2).forEach((subject, idx) => {
+                    document.getElementById('timeSlot').value = timeSlots[idx];
+                    document.getElementById('activity').value = `${subject.name} - ${activities[idx]}`;
+                    addPlanItem();
+                });
+            }
+        }
+
+        // Load plans on page load
+        window.addEventListener('load', () => {
+            renderPlans();
+            checkForSuggestions();
+        });
+    </script>
+</body>
+</html>

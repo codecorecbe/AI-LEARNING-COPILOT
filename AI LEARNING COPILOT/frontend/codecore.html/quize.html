@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Quiz Generator - Career Readiness AI Copilot</title>
+    <link rel="stylesheet" href="../codecore.css/style.css">
+</head>
+<body>
+    <!-- Responsive Navbar -->
+    <header>
+        <!-- Background Video INSIDE Header -->
+        <video id="bgVideo" class="header-bg-video" muted loop playsinline autoplay>
+            <source src="../introvedio.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        
+        <div class="header-content">
+            <h1>Career Readiness AI Copilot</h1>
+            <p class="tagline">Plan · Learn · Practice · Master</p>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav class="navbar" id="navbar">
+                <a href="index.html">Home</a>
+                <a href="subjects.html">Subjects</a>
+                <a href="task.html">Tasks</a>
+                <a href="doubts.html">Doubts</a>
+                <a href="quize.html" class="active">Quiz</a>
+                <a href="progress.html">Progress</a>
+                <a href="notes.html">Notes</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="content">
+        <section id="quiz" class="section active">
+            <h2>🎯 AI Quiz Generator</h2>
+            <p style="color: #6b7280; margin-bottom: 24px;">Generate custom quizzes on any topic with AI-powered questions!</p>
+            
+            <!-- Quiz Setup Section -->
+            <div id="quizSetup" class="quiz-setup">
+                <div class="subject-input-container">
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="quizTopic" 
+                            placeholder="Enter quiz topic (e.g., Python, JavaScript, Data Science...)"
+                            onkeypress="handleQuizEnter(event)"
+                            style="flex: 1; padding: 16px 20px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px;"
+                        >
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 16px; border-radius: 12px; margin-top: 16px;">
+                        <p style="color: white; margin: 0; text-align: center; font-weight: 600;">
+                            ✨ AI will generate 30-45 quiz questions based on your topic ✨
+                        </p>
+                        <p style="color: white; margin: 8px 0 0 0; text-align: center; font-size: 13px; opacity: 0.9;">
+                            Questions are shuffled and vary from basic to advanced
+                        </p>
+                    </div>
+                    
+                    <button onclick="generateQuiz()" class="btn-generate" style="margin-top: 20px; width: 100%; justify-content: center;">
+                        <span class="btn-text">Generate Quiz</span>
+                        <span class="btn-icon">✨</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="quizLoading" class="loading-container" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>AI is generating your quiz...</p>
+            </div>
+
+            <!-- Quiz Questions Section -->
+            <div id="quizContainer" style="display: none; margin-top: 30px;">
+                <div class="task-context-header" style="margin-bottom: 24px;">
+                    <div class="context-info">
+                        <p class="subject-name" id="quizTopicDisplay">Quiz Topic</p>
+                        <h2 class="topic-name" id="quizTitle">AI Generated Quiz</h2>
+                    </div>
+                    <div style="display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap;">
+                        <div style="background: #ecfdf5; padding: 12px 20px; border-radius: 10px; border-left: 4px solid #10b981;">
+                            <span style="color: #065f46; font-weight: 600;">Questions: <span id="totalQs">0</span></span>
+                        </div>
+                        <div style="background: #fef3c7; padding: 12px 20px; border-radius: 10px; border-left: 4px solid #f59e0b;">
+                            <span style="color: #92400e; font-weight: 600;">Difficulty: <span id="difficultyDisplay">Medium</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="questionsContainer" class="questions-grid">
+                    <!-- AI-generated questions will appear here -->
+                </div>
+
+                <div style="margin-top: 30px; text-align: center; padding: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px;">
+                    <button onclick="submitQuiz()" class="btn-primary" style="background: white; color: #667eea; font-size: 16px; padding: 14px 40px;">
+                        Submit Quiz 📊
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" style="display: none; margin-top: 30px;">
+                <div style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <h2 style="text-align: center; color: #0f172a; margin-bottom: 24px;">📊 Quiz Results</h2>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 32px;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; text-align: center; color: white;">
+                            <p style="margin: 0; font-size: 14px; opacity: 0.9;">Score</p>
+                            <p id="finalScore" style="margin: 8px 0 0; font-size: 32px; font-weight: 700;">0/0</p>
+                        </div>
+                        <div style="background: #10b981; padding: 20px; border-radius: 12px; text-align: center; color: white;">
+                            <p style="margin: 0; font-size: 14px; opacity: 0.9;">Correct</p>
+                            <p id="correctCount" style="margin: 8px 0 0; font-size: 32px; font-weight: 700;">0</p>
+                        </div>
+                        <div style="background: #ef4444; padding: 20px; border-radius: 12px; text-align: center; color: white;">
+                            <p style="margin: 0; font-size: 14px; opacity: 0.9;">Wrong</p>
+                            <p id="wrongCount" style="margin: 8px 0 0; font-size: 32px; font-weight: 700;">0</p>
+                        </div>
+                        <div style="background: #f59e0b; padding: 20px; border-radius: 12px; text-align: center; color: white;">
+                            <p style="margin: 0; font-size: 14px; opacity: 0.9;">Percentage</p>
+                            <p id="percentage" style="margin: 8px 0 0; font-size: 32px; font-weight: 700;">0%</p>
+                        </div>
+                    </div>
+
+                    <div id="performanceMessage" style="padding: 20px; border-radius: 12px; margin-bottom: 24px; text-align: center;"></div>
+
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="retakeQuiz()" class="btn-primary" style="background: #667eea;">
+                            Retake Quiz 🔄
+                        </button>
+                        <button onclick="newQuiz()" class="btn-primary" style="background: #10b981;">
+                            New Topic ✨
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading & Error Indicators -->
+    <div id="loading-indicator" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; z-index: 1000; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+        <div style="border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
+        <p id="loading-text">Generating quiz...</p>
+    </div>
+    <div id="error-container" style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1001;"></div>
+    <div id="success-container" style="position: fixed; top: 20px; left: 20px; width: 300px; z-index: 1001;"></div>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <!-- Load API Client FIRST, then Scripts -->
+    <script src="../codecore.js/api.js"></script>
+    <script>
+        // AI Quiz Generator
+        let currentQuiz = {
+            topic: '',
+            questions: [],
+            userAnswers: [],
+            difficulty: 'medium'
+        };
+
+        // Check if we should auto-generate quiz from topics
+        window.addEventListener('DOMContentLoaded', () => {
+            const needsQuiz = localStorage.getItem('needsQuizGeneration');
+            if (needsQuiz === 'true') {
+                const storedTopic = localStorage.getItem('currentQuizTopic');
+                if (storedTopic) {
+                    document.getElementById('quizTopic').value = storedTopic;
+                    localStorage.removeItem('needsQuizGeneration');
+                    generateQuiz();
+                }
+            }
+        });
+
+        // Generate quiz with AI (30-45 questions with smart batching)
+        async function generateQuiz() {
+            const topic = document.getElementById('quizTopic').value.trim();
+
+            if (!topic) {
+                alert('Please enter a quiz topic!');
+                return;
+            }
+
+            try {
+                // Show loading
+                document.getElementById('quizSetup').style.display = 'none';
+                document.getElementById('quizLoading').style.display = 'flex';
+                document.getElementById('quizLoading').querySelector('p').textContent = 'AI is generating your quiz...';
+
+                // Create API client with correct base URL
+                const apiClient = new APIClient({
+                    BASE_URL: 'http://127.0.0.1:8000/api'
+                });
+                
+                let allQuestions = [];
+                const targetQuestions = 10;
+
+                // Generate questions from API
+                const response = await apiClient.generateQuiz(topic, targetQuestions);
+                
+                if (!response || !response.data || !response.data.questions) {
+                    throw new Error('Invalid response from API');
+                }
+                
+                allQuestions = response.data.questions;
+                console.log(`Generated ${allQuestions.length} questions from API`);
+
+                if (allQuestions.length === 0) {
+                    throw new Error('No questions were generated. Please try again.');
+                }
+
+                console.log(`Quiz generation complete: ${allQuestions.length} total questions`);
+
+                // Shuffle all questions for randomness
+                const shuffledQuestions = shuffleArray(allQuestions);
+
+                // Set current quiz
+                currentQuiz.topic = topic;
+                currentQuiz.questions = shuffledQuestions;
+                currentQuiz.userAnswers = new Array(shuffledQuestions.length).fill(null);
+
+                // Display quiz
+                displayQuiz();
+
+                // Hide loading, show quiz
+                document.getElementById('quizLoading').style.display = 'none';
+                document.getElementById('quizContainer').style.display = 'block';
+
+            } catch (error) {
+                console.error('Quiz generation error:', error);
+                const errorMessage = error.message || 'Failed to generate quiz. Please try again.';
+                alert(errorMessage);
+                document.getElementById('quizLoading').style.display = 'none';
+                document.getElementById('quizSetup').style.display = 'block';
+            }
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function displayQuiz() {
+            document.getElementById('quizTopicDisplay').textContent = currentQuiz.topic;
+            document.getElementById('quizTitle').textContent = `${currentQuiz.topic} Quiz`;
+            document.getElementById('totalQs').textContent = currentQuiz.questions.length;
+            document.getElementById('difficultyDisplay').textContent = 'AI Generated';
+
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = currentQuiz.questions.map((q, index) => `
+                <div class="question-card" style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 24px; transition: all 0.3s ease; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <span class="question-number" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;">
+                            ${index + 1}
+                        </span>
+                    </div>
+                    <p class="question-text" style="margin-bottom: 20px; font-size: 15px; line-height: 1.6; color: #0f172a; font-weight: 500;">${q.question}</p>
+                    <div class="options-container" style="display: flex; flex-direction: column; gap: 10px;">
+                        ${Object.entries(q.options).map(([key, value]) => `
+                            <label class="option-label" style="display: flex; align-items: center; gap: 12px; padding: 14px; border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; background: white;">
+                                <input 
+                                    type="radio" 
+                                    name="question${index}" 
+                                    value="${key}" 
+                                    onchange="selectAnswer(${index}, '${key}')"
+                                    style="width: 20px; height: 20px; cursor: pointer; accent-color: #667eea;"
+                                >
+                                <span style="flex: 1; color: #374151; font-size: 14px;"><strong>${key}:</strong> ${value}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectAnswer(questionIndex, optionKey) {
+            currentQuiz.userAnswers[questionIndex] = optionKey;
+        }
+
+        function handleQuizEnter(event) {
+            if (event.key === 'Enter') {
+                generateQuiz();
+            }
+        }
+
+        function submitQuiz() {
+            // Check if all questions are answered
+            const unanswered = currentQuiz.userAnswers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                if (!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) {
+                    return;
+                }
+            }
+
+            // Calculate results
+            let correct = 0;
+            currentQuiz.userAnswers.forEach((answer, index) => {
+                if (answer === currentQuiz.questions[index].correct_answer) {
+                    correct++;
+                }
+            });
+
+            const total = currentQuiz.questions.length;
+            const wrong = total - correct;
+            const percentage = Math.round((correct / total) * 100);
+
+            // Display results
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('finalScore').textContent = `${correct}/${total}`;
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('wrongCount').textContent = wrong;
+            document.getElementById('percentage').textContent = `${percentage}%`;
+
+            // Performance message
+            const msgContainer = document.getElementById('performanceMessage');
+            let message = '';
+            let bgColor = '';
+
+            if (percentage >= 80) {
+                message = '🏆 Excellent! You have mastered this topic!';
+                bgColor = '#d1fae5';
+            } else if (percentage >= 60) {
+                message = '✅ Good job! You have a solid understanding!';
+                bgColor = '#fef3c7';
+            } else if (percentage >= 40) {
+                message = '📚 Keep practicing! Review the concepts again.';
+                bgColor = '#fee2e2';
+            } else {
+                message = '💪 Need more practice. Don\'t give up!';
+                bgColor = '#fee2e2';
+            }
+
+            msgContainer.innerHTML = `<strong style="font-size: 18px; color: #0f172a;">${message}</strong>`;
+            msgContainer.style.background = bgColor;
+
+            // Save to quiz history in localStorage
+            const quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            quizHistory.push({
+                topic: currentQuiz.topic,
+                score: percentage,
+                correctAnswers: correct,
+                totalQuestions: total,
+                date: new Date().toISOString(),
+                timestamp: Date.now()
+            });
+            localStorage.setItem('quizHistory', JSON.stringify(quizHistory));
+
+            // Scroll to results
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function retakeQuiz() {
+            currentQuiz.userAnswers = new Array(currentQuiz.questions.length).fill(null);
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+            displayQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function newQuiz() {
+            currentQuiz = {
+                topic: '',
+                questions: [],
+                userAnswers: [],
+                difficulty: 'medium'
+            };
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('quizSetup').style.display = 'block';
+            document.getElementById('quizTopic').value = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navbar = document.getElementById('navbar');
+            navbar.classList.toggle('active');
+        }
+    </script>
+    <script src="../codecore.js/bg-video.js"></script>
+</body>
+</html>

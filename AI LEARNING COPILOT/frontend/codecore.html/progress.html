@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress - Career Readiness AI Copilot</title>
+    <link rel="stylesheet" href="../codecore.css/style.css">
+</head>
+<body>
+    <header>
+        <!-- Background Video INSIDE Header -->
+        <video id="bgVideo" class="header-bg-video" muted loop playsinline autoplay>
+            <source src="../introvedio.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        
+        <div class="header-content">
+            <h1>Career Readiness AI Copilot</h1>
+            <p class="tagline">Plan · Learn · Practice · Master</p>
+            
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav class="navbar" id="navbar">
+                <a href="index.html">Home</a>
+                <a href="subjects.html">Subjects</a>
+                <a href="task.html">Tasks</a>
+                <a href="doubts.html">Doubts</a>
+                <a href="quize.html">Quiz</a>
+                <a href="progress.html" class="active">Progress</a>
+                <a href="notes.html">Notes</a>
+            </nav>
+        </div>
+    </header>
+    <main class="content">
+        <section id="progress" class="section active">
+            <h2>📊 AI Progress Report</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Your personalized learning journey analyzed by AI</p>
+            
+            <!-- Progress Sub-Navigation -->
+            <div class="plan-navbar">
+                <button onclick="showProgressSection('aiReport')" class="plan-btn active">AI Report</button>
+                <button onclick="showProgressSection('quizHistory')" class="plan-btn">Quiz History</button>
+                <button onclick="showProgressSection('activityLog')" class="plan-btn">Activity Log</button>
+            </div>
+
+            <!-- AI Generated Report Section -->
+            <div id="aiReport" class="plan-content active">
+                <div class="progress-container">
+                    <!-- Overall Stats Card -->
+                    <div class="progress-item" style="grid-column: 1 / -1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <h3 style="margin: 0 0 15px 0; color: white;">🎯 Overall Performance</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <div>
+                                <p style="font-size: 24px; font-weight: bold; margin: 5px 0;" id="totalQuizzes">0</p>
+                                <p style="font-size: 14px; opacity: 0.9;">Total Quizzes</p>
+                            </div>
+                            <div>
+                                <p style="font-size: 24px; font-weight: bold; margin: 5px 0;" id="avgScore">0%</p>
+                                <p style="font-size: 14px; opacity: 0.9;">Average Score</p>
+                            </div>
+                            <div>
+                                <p style="font-size: 24px; font-weight: bold; margin: 5px 0;" id="totalDoubts">0</p>
+                                <p style="font-size: 14px; opacity: 0.9;">Doubts Asked</p>
+                            </div>
+                            <div>
+                                <p style="font-size: 24px; font-weight: bold; margin: 5px 0;" id="studyStreak">0</p>
+                                <p style="font-size: 14px; opacity: 0.9;">Study Days</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Insights Card -->
+                    <div class="progress-item" style="grid-column: 1 / -1;">
+                        <h3 style="margin: 0 0 15px 0;">🤖 AI Insights</h3>
+                        <div id="aiInsights" style="line-height: 1.8;">
+                            <p style="margin: 10px 0;"><strong>📈 Strengths:</strong> <span id="strengthsText">Loading...</span></p>
+                            <p style="margin: 10px 0;"><strong>📉 Areas to Improve:</strong> <span id="weaknessText">Loading...</span></p>
+                            <p style="margin: 10px 0;"><strong>💡 AI Recommendation:</strong> <span id="recommendationText">Loading...</span></p>
+                            <p style="margin: 10px 0;"><strong>🎓 Learning Style:</strong> <span id="learningStyle">Loading...</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Performance Breakdown -->
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>📝 Latest Quiz Score</span>
+                            <span class="progress-percentage" id="latestQuizScore">-</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="latestQuizBar" class="progress-fill" style="width: 0%; background: #3b82f6;"></div>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 13px; color: #666;">
+                            Topic: <span id="latestQuizTopic" style="font-weight: 600;">-</span><br>
+                            Date: <span id="latestQuizDate">-</span>
+                        </p>
+                    </div>
+
+                    <!-- Doubt Solving Activity -->
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>❓ Doubt Solving Rate</span>
+                            <span class="progress-percentage" id="doubtSolveRate">-</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="doubtRateBar" class="progress-fill" style="width: 100%; background: #10b981;"></div>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 13px; color: #666;">
+                            Total Doubts: <span id="doubtCount" style="font-weight: 600;">0</span><br>
+                            Last Asked: <span id="lastDoubtDate">-</span>
+                        </p>
+                    </div>
+
+                    <!-- Subject Coverage -->
+                    <div class="progress-item" style="grid-column: 1 / -1;">
+                        <h3 style="margin: 0 0 15px 0;">📚 Subject Coverage</h3>
+                        <div id="subjectCoverage" style="color: #6b7280;">
+                            No subjects explored yet. Start by adding a subject!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz History Section -->
+            <div id="quizHistory" class="plan-content">
+                <h3>📋 Complete Quiz History</h3>
+                <div id="quizHistoryList" class="progress-container">
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Activity Log Section -->
+            <div id="activityLog" class="plan-content">
+                <h3>📜 Recent Activity</h3>
+                <div id="activityList" style="max-height: 600px; overflow-y: auto;">
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../codecore.js/script.js"></script>
+    <script>
+        // AI Progress Report Generator
+        function generateAIReport() {
+            // Get all quiz history
+            const quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            const doubtHistory = JSON.parse(localStorage.getItem('doubtHistory') || '[]');
+            
+            // Calculate stats
+            const totalQuizzes = quizHistory.length;
+            const avgScore = totalQuizzes > 0 
+                ? Math.round(quizHistory.reduce((sum, q) => sum + q.score, 0) / totalQuizzes) 
+                : 0;
+            const totalDoubts = doubtHistory.length;
+            
+            // Calculate study days (unique dates)
+            const allDates = new Set([
+                ...quizHistory.map(q => new Date(q.date).toDateString()),
+                ...doubtHistory.map(d => new Date(d.timestamp).toDateString())
+            ]);
+            const studyStreak = allDates.size;
+
+            // Update overall stats
+            document.getElementById('totalQuizzes').textContent = totalQuizzes;
+            document.getElementById('avgScore').textContent = avgScore + '%';
+            document.getElementById('totalDoubts').textContent = totalDoubts;
+            document.getElementById('studyStreak').textContent = studyStreak;
+
+            // Latest quiz info
+            if (quizHistory.length > 0) {
+                const latest = quizHistory[quizHistory.length - 1];
+                document.getElementById('latestQuizScore').textContent = latest.score + '%';
+                document.getElementById('latestQuizBar').style.width = latest.score + '%';
+                document.getElementById('latestQuizTopic').textContent = latest.topic || 'General';
+                document.getElementById('latestQuizDate').textContent = new Date(latest.date).toLocaleDateString();
+            }
+
+            // Doubt stats
+            document.getElementById('doubtCount').textContent = totalDoubts;
+            document.getElementById('doubtSolveRate').textContent = totalDoubts > 0 ? '100%' : '-';
+            if (doubtHistory.length > 0) {
+                const lastDoubt = doubtHistory[doubtHistory.length - 1];
+                document.getElementById('lastDoubtDate').textContent = new Date(lastDoubt.timestamp).toLocaleDateString();
+            }
+
+            // Generate AI Insights
+            generateAIInsights(quizHistory, doubtHistory, avgScore);
+            
+            // Generate subject coverage
+            generateSubjectCoverage(quizHistory, doubtHistory);
+        }
+
+        function generateAIInsights(quizHistory, doubtHistory, avgScore) {
+            let strengths = "Still building data...";
+            let weakness = "Keep practicing to identify areas";
+            let recommendation = "Complete more quizzes and ask doubts to get personalized recommendations";
+            let learningStyle = "Data gathering phase";
+
+            if (quizHistory.length >= 3) {
+                // Analyze performance
+                if (avgScore >= 80) {
+                    strengths = "Excellent comprehension! You consistently score high across topics.";
+                    recommendation = "Challenge yourself with advanced topics or competitive programming.";
+                    learningStyle = "Fast learner with strong retention";
+                } else if (avgScore >= 60) {
+                    strengths = "Good understanding of core concepts. Making steady progress.";
+                    weakness = "Some topics need deeper practice for mastery.";
+                    recommendation = "Focus on reviewing incorrect answers and practice similar questions.";
+                    learningStyle = "Consistent learner, benefits from repetition";
+                } else {
+                    strengths = "You're actively engaging with learning materials.";
+                    weakness = "Concepts need more reinforcement through practice and revision.";
+                    recommendation = "Start with fundamentals, use doubts section more, and retake quizzes.";
+                    learningStyle = "Learning in progress, needs foundational review";
+                }
+
+                // Analyze doubt patterns
+                if (doubtHistory.length > quizHistory.length) {
+                    learningStyle += " - Proactive doubt-asker (great habit!)";
+                }
+
+                // Check improvement trend
+                if (quizHistory.length >= 2) {
+                    const recentAvg = quizHistory.slice(-3).reduce((sum, q) => sum + q.score, 0) / Math.min(3, quizHistory.length);
+                    const oldAvg = quizHistory.slice(0, -3).reduce((sum, q) => sum + q.score, 0) / Math.max(1, quizHistory.length - 3);
+                    
+                    if (recentAvg > oldAvg + 10) {
+                        strengths += " Showing improvement trend! 📈";
+                    }
+                }
+            }
+
+            document.getElementById('strengthsText').textContent = strengths;
+            document.getElementById('weaknessText').textContent = weakness;
+            document.getElementById('recommendationText').textContent = recommendation;
+            document.getElementById('learningStyle').textContent = learningStyle;
+        }
+
+        function generateSubjectCoverage(quizHistory, doubtHistory) {
+            const subjects = {};
+            
+            // Collect from quiz history
+            quizHistory.forEach(quiz => {
+                const topic = quiz.topic || 'General';
+                if (!subjects[topic]) {
+                    subjects[topic] = { quizzes: 0, avgScore: 0, totalScore: 0 };
+                }
+                subjects[topic].quizzes++;
+                subjects[topic].totalScore += quiz.score;
+            });
+
+            // Calculate averages
+            Object.keys(subjects).forEach(topic => {
+                subjects[topic].avgScore = Math.round(subjects[topic].totalScore / subjects[topic].quizzes);
+            });
+
+            const coverageEl = document.getElementById('subjectCoverage');
+            if (Object.keys(subjects).length === 0) {
+                coverageEl.innerHTML = '<p style="color: #6b7280;">No subjects explored yet. Start by adding a subject!</p>';
+            } else {
+                let html = '<div style="display: grid; gap: 15px;">';
+                Object.entries(subjects).forEach(([topic, data]) => {
+                    const color = data.avgScore >= 80 ? '#10b981' : data.avgScore >= 60 ? '#f59e0b' : '#ef4444';
+                    html += `
+                        <div style="padding: 15px; border-left: 4px solid ${color}; background: #f9fafb; border-radius: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-weight: 600; color: #0f172a;">${topic}</span>
+                                <span style="font-weight: bold; color: ${color};">${data.avgScore}%</span>
+                            </div>
+                            <div style="background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${data.avgScore}%; height: 100%; background: ${color};"></div>
+                            </div>
+                            <p style="margin-top: 8px; font-size: 13px; color: #6b7280;">
+                                ${data.quizzes} quiz${data.quizzes > 1 ? 'zes' : ''} completed
+                            </p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                coverageEl.innerHTML = html;
+            }
+        }
+
+        function loadQuizHistory() {
+            const quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            const historyEl = document.getElementById('quizHistoryList');
+            
+            if (quizHistory.length === 0) {
+                historyEl.innerHTML = '<p style="color: #6b7280; grid-column: 1/-1;">No quiz history yet. Take your first quiz!</p>';
+            } else {
+                let html = '';
+                quizHistory.reverse().forEach((quiz, index) => {
+                    const scoreColor = quiz.score >= 80 ? '#10b981' : quiz.score >= 60 ? '#f59e0b' : '#ef4444';
+                    html += `
+                        <div class="progress-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h4 style="margin: 0;">${quiz.topic || 'Quiz #' + (quizHistory.length - index)}</h4>
+                                <span style="font-size: 20px; font-weight: bold; color: ${scoreColor};">${quiz.score}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${quiz.score}%; background: ${scoreColor};"></div>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 13px; color: #6b7280;">
+                                Questions: ${quiz.totalQuestions} | 
+                                Correct: ${quiz.correctAnswers} | 
+                                Date: ${new Date(quiz.date).toLocaleDateString()}
+                            </p>
+                        </div>
+                    `;
+                });
+                historyEl.innerHTML = html;
+            }
+        }
+
+        function loadActivityLog() {
+            const quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            const doubtHistory = JSON.parse(localStorage.getItem('doubtHistory') || '[]');
+            
+            // Combine and sort by date
+            const activities = [
+                ...quizHistory.map(q => ({ type: 'quiz', data: q, date: new Date(q.date) })),
+                ...doubtHistory.map(d => ({ type: 'doubt', data: d, date: new Date(d.timestamp) }))
+            ].sort((a, b) => b.date - a.date);
+
+            const activityEl = document.getElementById('activityList');
+            
+            if (activities.length === 0) {
+                activityEl.innerHTML = '<p style="color: #6b7280; padding: 20px;">No activity yet. Start learning!</p>';
+            } else {
+                let html = '';
+                activities.forEach(activity => {
+                    if (activity.type === 'quiz') {
+                        const scoreColor = activity.data.score >= 80 ? '#10b981' : activity.data.score >= 60 ? '#f59e0b' : '#ef4444';
+                        html += `
+                            <div style="padding: 15px; border-left: 3px solid ${scoreColor}; background: #f9fafb; margin-bottom: 10px; border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong style="color: #0f172a;">🎯 Quiz: ${activity.data.topic || 'General'}</strong>
+                                        <p style="margin: 5px 0; font-size: 13px; color: #6b7280;">
+                                            Score: ${activity.data.score}% (${activity.data.correctAnswers}/${activity.data.totalQuestions})
+                                        </p>
+                                    </div>
+                                    <span style="font-size: 12px; color: #9ca3af;">${activity.date.toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div style="padding: 15px; border-left: 3px solid #3b82f6; background: #f9fafb; margin-bottom: 10px; border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        <strong style="color: #0f172a;">❓ Doubt</strong>
+                                        <p style="margin: 5px 0; font-size: 14px; color: #0f172a;">${activity.data.question}</p>
+                                    </div>
+                                    <span style="font-size: 12px; color: #9ca3af; white-space: nowrap; margin-left: 10px;">${activity.date.toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                activityEl.innerHTML = html;
+            }
+        }
+
+        function showProgressSection(sectionId) {
+            const sections = document.querySelectorAll('.plan-content');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            const buttons = document.querySelectorAll('.plan-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Reload scores when viewing progress
+            loadQuizScores();
+        }
+ src="../codecore.js/script.js"></script>
+    <script>
+        // AI Progress Report Generator
+        function generateAIReport() {
+            // Get all quiz history
+            const quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            const doubtHistory = JSON.parse(localStorage.getItem('doubtHistory') || '[]');
+            
+            // Calculate stats
+            const totalQuizzes = quizHistory.length;
+            const avgScore = totalQuizzes > 0 
+                ? Math.round(quizHistory.reduce((sum, q) => sum + q.score, 0) / totalQuizzes) 
+                : 0;
+            const totalDoubts = doubtHistory.length;
+            
+            // Calculate study days (unique dates)
+            const allDates = new Set([
+                ...quizHistory.map(q => new Date(q.date).toDateString()),
+                ...doubtHistory.map(d => new Date(d.timestamp).toDateString())
+            ]);
+            const studyStreak = allDates.size;
+
+            // Update overall stats
+            document.getElementById('totalQuizzes').textContent = totalQuizzes;
+            document.getElementById('avgScore').textContent = avgScore + '%';
+            document.getElementById('totalDoubts').textContent = totalDoubts;
+            document.getElementById('studyStreak').textContent = studyStreak;
+
+            // Latest quiz info
+            if (quizHistory.length > 0) {
+                const latest = quizHistory[quizHistory.length - 1];
+                document.getElementById('latestQuizScore').textContent = latest.score + '%';
+                document.getElementById('latestQuizBar').style.width = latest.score + '%';
+                document.getElementById('latestQuizTopic').textContent = latest.topic || 'General';
+                document.getElementById('latestQuizDate').textContent = new Date(latest.date).toLocaleDateString();
+            }
+
+            // Doubt stats
+            document.getElementById('doubtCount').textContent = totalDoubts;
+            document.getElementById('doubtSolveRate').textContent = totalDoubts > 0 ? '100%' : '-';
+            if (doubtHistory.length > 0) {
+                const lastDoubt = doubtHistory[doubtHistory.length - 1];
+                document.getElementById('lastDoubtDate').textContent = new Date(lastDoubt.timestamp).toLocaleDateString();
+            }
+
+            // Generate AI Insights
+            generateAIInsights(quizHistory, doubtHistory, avgScore);
+            
+            // Generate subject coverage
+            generateSubjectCoverage(quizHistory, doubtHistory);
+        }
+
+        function generateAIInsights(quizHistory, doubtHistory, avgScore) {
+            let strengths = "Still building data...";
+            let weakness = "Keep practicing to identify areas";
+            let recommendation = "Complete more quizzes and ask doubts to get personalized recommendations";
+            let learningStyle = "Data gathering phase";
+
+            if (quizHistory.length >= 3) {
+                // Analyze performance
+                if (avgScore >= 80) {
+                    strengths = "Excellent comprehension! You consistently score high across topics.";
+                    recommendation = "Challenge yourself with advanced topics or competitive programming.";
+                    learningStyle = "Fast learner with strong retention";
+                } else if (avgScore >= 60) {
+                    strengths = "Good understanding of core concepts. Making steady progress.";
+                    weakness = "Some topics need deeper practice for mastery.";
+                    recommendation = "Focus on reviewing incorrect answers and practice similar questions.";
+                    learningStyle = "Consistent learner, benefits from repetition";
+                } else {
+                    strengths = "You're actively engaging with learning materials.";
+                    weakness = "Concepts need more reinforcement through practice and revision.";
+                    recommendation = "Start with fundamentals, use doubts section more, and retake quizzes.";
+                    learningStyle = "Learning in progress, needs foundational review";
+                }
+
+                // Analyze doubt patterns
+                if (doubtHistory.length > quizHistory.length) {
+                    learningStyle += " - Proactive doubt-asker (great habit!)";
+                }
+
+                // Check improvement trend
+                if (quizHistory.length >= 2) {
+                    const recentAvg = quizHistory.slice(-3).reduce((sum, q) => sum + q.score, 0) / Math.min(3, quizHistory.length);
+                    const oldAvg = quizHistory.slice(0, -3).reduce((sum, q) => sum + q.score, 0) / Math.max(1, quizHistory.length - 3);
+                    
+                    if (recentAvg > oldAvg + 10) {
+                        strengths += " Showing improvement trend! 📈";
+                    }
+                }
+            }
+
+            document.getElementById('strengthsText').textContent = strengths;
+            document.getElementById('weaknessText').textContent = weakness;
+            document.getElementById('recommendationText').textContent = recommendation;
+            document.getElementById('learningStyle').textContent = learningStyle;
+        }
+
+        function generateSubjectCoverage(quizHistory, doubtHistory) {
+            const subjects = {};
+            
+            // Collect from quiz history
+            quizHistory.forEach(quiz => {
+                const topic = quiz.topic || 'General';
+                if (!subjects[topic]) {
+                    subjects[topic] = { quizzes: 0, avgScore: 0, totalScore: 0 };
+                }
+                subjects[topic].quizzes++;
+                subjects[topic].totalScore += quiz.score;
+            });
+
+            // Calculate averages
+            Object.keys(subjects).forEach(topic => {
+                subjects[topic].avgScore = Math.round(subjects[topic].totalScore / subjects[topic].quizzes);
+            });
+
+            const coverageEl = document.getElementById('subjectCoverage');
+            if (Object.keys(subjects).length === 0) {
+                coverageEl.innerHTML = '<p style="color: #6b7280;">No subjects explored yet. Start by adding a subject!</p>';
+            } else {
+                let html = '<div style="display: grid; gap: 15px;">';
+                Object.entries(subjects).forEach(([topic, data]) => {
+                    const color = data.avgScore >= 80 ? '#10b981' : data.avgScore >= 60 ? '#f59e0b' : '#ef4444';
+                    html += `
+                        <div style="padding: 15px; border-left: 4px solid ${color}; background: #f9fafb; border-radius: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-weight: 600; color: #0f172a;">${topic}</span>
+                                <span style="font-weight: bold; color: ${color};">${data.avgScore}%</span>
+                            </div>
+                            <div style="background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${data.avgScore}%; height: 100%; background: ${color};"></div>
+                            </div>
+                            <p style="margin-top: 8px; font-size: 13px; color: #6b7280;">
+                                ${data.quizzes} quiz${data.quizzes > 1 ? 'zes' : ''} completed
+                            </p>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                coverageEl.innerHTML = html;
+            }
+        }
+
+        function loadQuizHistory() {
+            const quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            const historyEl = document.getElementById('quizHistoryList');
+            
+            if (quizHistory.length === 0) {
+                historyEl.innerHTML = '<p style="color: #6b7280; grid-column: 1/-1;">No quiz history yet. Take your first quiz!</p>';
+            } else {
+                let html = '';
+                quizHistory.reverse().forEach((quiz, index) => {
+                    const scoreColor = quiz.score >= 80 ? '#10b981' : quiz.score >= 60 ? '#f59e0b' : '#ef4444';
+                    html += `
+                        <div class="progress-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h4 style="margin: 0;">${quiz.topic || 'Quiz #' + (quizHistory.length - index)}</h4>
+                                <span style="font-size: 20px; font-weight: bold; color: ${scoreColor};">${quiz.score}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${quiz.score}%; background: ${scoreColor};"></div>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 13px; color: #6b7280;">
+                                Questions: ${quiz.totalQuestions} | 
+                                Correct: ${quiz.correctAnswers} | 
+                                Date: ${new Date(quiz.date).toLocaleDateString()}
+                            </p>
+                        </div>
+                    `;
+                });
+                historyEl.innerHTML = html;
+            }
+        }
+
+        function loadActivityLog() {
+            const quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            const doubtHistory = JSON.parse(localStorage.getItem('doubtHistory') || '[]');
+            
+            // Combine and sort by date
+            const activities = [
+                ...quizHistory.map(q => ({ type: 'quiz', data: q, date: new Date(q.date) })),
+                ...doubtHistory.map(d => ({ type: 'doubt', data: d, date: new Date(d.timestamp) }))
+            ].sort((a, b) => b.date - a.date);
+
+            const activityEl = document.getElementById('activityList');
+            
+            if (activities.length === 0) {
+                activityEl.innerHTML = '<p style="color: #6b7280; padding: 20px;">No activity yet. Start learning!</p>';
+            } else {
+                let html = '';
+                activities.forEach(activity => {
+                    if (activity.type === 'quiz') {
+                        const scoreColor = activity.data.score >= 80 ? '#10b981' : activity.data.score >= 60 ? '#f59e0b' : '#ef4444';
+                        html += `
+                            <div style="padding: 15px; border-left: 3px solid ${scoreColor}; background: #f9fafb; margin-bottom: 10px; border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong style="color: #0f172a;">🎯 Quiz: ${activity.data.topic || 'General'}</strong>
+                                        <p style="margin: 5px 0; font-size: 13px; color: #6b7280;">
+                                            Score: ${activity.data.score}% (${activity.data.correctAnswers}/${activity.data.totalQuestions})
+                                        </p>
+                                    </div>
+                                    <span style="font-size: 12px; color: #9ca3af;">${activity.date.toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div style="padding: 15px; border-left: 3px solid #3b82f6; background: #f9fafb; margin-bottom: 10px; border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        <strong style="color: #0f172a;">❓ Doubt</strong>
+                                        <p style="margin: 5px 0; font-size: 14px; color: #0f172a;">${activity.data.question}</p>
+                                    </div>
+                                    <span style="font-size: 12px; color: #9ca3af; white-space: nowrap; margin-left: 10px;">${activity.date.toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                activityEl.innerHTML = html;
+            }
+        }
+
+        function showProgressSection(sectionId) {
+            const sections = document.querySelectorAll('.plan-content');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            const buttons = document.querySelectorAll('.plan-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load appropriate data
+            if (sectionId === 'aiReport') {
+                generateAIReport();
+            } else if (sectionId === 'quizHistory') {
+                loadQuizHistory();
+            } else if (sectionId === 'activityLog') {
+                loadActivityLog();
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            generateAIReport();
+        });
+
+        window.addEventListener('focus', () => {
+            if (document.querySelector('#aiReport.active')) {
+                generateAIReport();
+            }
+        }
+    </script>
+    <script src="../codecore.js/bg-video.js"></script>
+</body>
+</html>
